@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Converter</title>
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Text to Speech Converter</h1>
+    </header>
+    <div class="container">
+        <textarea id="text-input" placeholder="Type your text here..." rows="4" required></textarea>
+        <label for="voice">Select Voice:</label>
+        <select id="voice">
+            <option value="UK English Male">UK English Male</option>
+            <option value="US English Female">US English Female</option>
+            <option value="US English Male">US English Male</option>
+            <option value="UK English Female">UK English Female</option>
+            <!-- Add more options as needed -->
+        </select>
+        <button onclick="speakText()">Speak</button>
+        
+        <div class="audio-controls" style="display:none;">
+            <audio id="audio-preview" controls></audio>
+            <div class="download-container" style="display: none;">
+                <a id="download-link" class="download-btn" download>Download Audio</a>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Text to Speech Converter | <a href="#" style="color: white;">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        function speakText() {
+            var text = document.getElementById("text-input").value;
+            var voice = document.getElementById("voice").value;
+            var audioElement = document.getElementById("audio-preview");
+            var downloadLink = document.getElementById("download-link");
+            var downloadContainer = document.querySelector('.download-container');
+            var audioControls = document.querySelector('.audio-controls');
+    
+            if (text.trim() === "") {
+                alert("Please enter some text to convert to speech.");
+                return;
+            }
+    
+            // Using ResponsiveVoice to speak the text
+            responsiveVoice.speak(text, voice, {
+                onstart: function() {
+                    audioControls.style.display = "block";  // Show audio controls when speech starts
+                },
+                onend: function() {
+                    // Generate a dummy audio file URL (this would be replaced with actual audio data)
+                    var audioData = btoa(text); // Placeholder for real audio data
+                    var url = "data:audio/wav;base64," + audioData;
+    
+                    // Set the audio preview source and play it
+                    audioElement.src = url;
+                    audioElement.load();
+                    audioElement.play();
+    
+                    // Show the download link with the generated audio
+                    downloadLink.href = url;
+                    downloadLink.innerHTML = "Download Audio";
+                    downloadLink.style.display = "block";
+                    downloadContainer.style.display = "block";
+                    
+                    // Show audio duration after loading
+                    audioElement.onloadedmetadata = function() {
+                        var duration = audioElement.duration;
+                        console.log("Audio duration: " + duration + " seconds");
+                    };
+                }
+            });
+        }
+    
+        // Reset download link and hide audio preview when new text is entered
+        document.getElementById("text-input").addEventListener("input", function() {
+            document.getElementById("audio-preview").src = "";
+            document.getElementById("download-link").style.display = "none";
+            document.querySelector('.download-container').style.display = "none";
+        });
+    
+        // Display duration time when audio preview loads
+        document.getElementById("audio-preview").addEventListener("loadedmetadata", function() {
+            var duration = this.duration;
+            console.log("Audio Duration: " + duration.toFixed(2) + " seconds");
+        });
+    </script>
+    
+    
+</body>
+</html>
